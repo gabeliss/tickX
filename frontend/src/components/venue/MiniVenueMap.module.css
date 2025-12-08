@@ -1,0 +1,88 @@
+/**
+ * MiniVenueMap Styles
+ */
+
+.container {
+  background-color: var(--color-neutral-100);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  min-height: 200px;
+}
+
+.section {
+  stroke: var(--color-white);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+.highlightedSection {
+  stroke: var(--color-primary-700);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 8px var(--color-primary));
+}
+
+.courtLabel {
+  font-family: var(--font-accent);
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-text-tertiary);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  letter-spacing: 0.1em;
+}
+
+.sectionLabel {
+  font-family: var(--font-accent);
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-white);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.pulse {
+  fill: var(--color-primary);
+  opacity: 0.3;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    r: 20;
+    opacity: 0.3;
+  }
+  50% {
+    r: 30;
+    opacity: 0.1;
+  }
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-2);
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  box-shadow: 0 0 6px var(--color-primary);
+}

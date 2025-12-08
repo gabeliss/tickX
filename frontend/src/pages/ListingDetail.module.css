@@ -1,0 +1,666 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: var(--color-bg-primary);
+}
+
+/* Top Navigation */
+.topNav {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border-light);
+  position: sticky;
+  top: 64px;
+  z-index: var(--z-sticky);
+}
+
+.topNav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3) var(--spacing-4);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--color-primary);
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.iconButton:hover {
+  background-color: var(--color-neutral-100);
+  color: var(--color-primary);
+}
+
+/* Content */
+.content {
+  flex: 1;
+  padding: var(--spacing-6) 0;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--spacing-6);
+  }
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr 400px;
+  }
+}
+
+/* Main Content */
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+/* Event Card */
+.eventCard {
+  /* Card styles from component */
+}
+
+.eventInfo {
+  display: flex;
+  gap: var(--spacing-4);
+}
+
+.eventImage {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .eventImage {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+.eventDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventTitle {
+  font-family: var(--font-accent);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2);
+}
+
+@media (min-width: 640px) {
+  .eventTitle {
+    font-size: var(--text-2xl);
+  }
+}
+
+.eventMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+@media (min-width: 640px) {
+  .eventMeta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+  }
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Ticket Card */
+.ticketCard {
+  /* Card styles from component */
+}
+
+.ticketHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.ticketTitle {
+  font-family: var(--font-accent);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: var(--spacing-2) 0 0;
+}
+
+.ticketSeats {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-1) 0 0;
+}
+
+.ticketMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.watcherCount {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.venueMap {
+  margin-top: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.venueMapPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  margin-top: var(--spacing-4);
+  background-color: var(--color-neutral-100);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+  gap: var(--spacing-1);
+}
+
+.sectionHighlight {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+/* Analysis Card */
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-accent);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-4);
+}
+
+.analysisGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+}
+
+.analysisItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.analysisLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.analysisValue {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Bids Card */
+.bidList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.bidItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+}
+
+.bidItem.winningBid {
+  background-color: var(--color-success-light);
+}
+
+.bidInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.bidAmount {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.bidder {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.bidTime {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* Seller Card */
+.sellerInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.sellerAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.sellerDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.sellerName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.sellerStats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.sellerRating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--color-warning);
+}
+
+/* Sidebar */
+.sidebar {
+  position: sticky;
+  top: 140px;
+  align-self: start;
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    position: fixed;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    top: auto;
+    padding: var(--spacing-4);
+    background-color: var(--color-white);
+    border-top: 1px solid var(--color-border-light);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    z-index: var(--z-sticky);
+  }
+
+  .sidebar .bidCard {
+    padding: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+.bidCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+/* Auction Timer */
+.auctionTimer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background-color: var(--color-neutral-100);
+  border-radius: var(--radius-lg);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.auctionTimer.endingSoon {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
+}
+
+/* Price Section */
+.priceSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.priceLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.currentPrice {
+  font-family: var(--font-accent);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.currentPrice.declining {
+  color: var(--color-warning);
+}
+
+.buyNowPrice {
+  font-family: var(--font-accent);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.bidCount {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.priceHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.reserveStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+}
+
+.reserveMet {
+  background-color: var(--color-success-light);
+  color: #059669;
+}
+
+.reserveNotMet {
+  background-color: var(--color-warning-light);
+  color: #b45309;
+}
+
+/* Bid Form */
+.bidForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.currencySymbol {
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+}
+
+.proxyToggle {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.proxyToggle:hover {
+  text-decoration: underline;
+}
+
+/* Buy Section */
+.buySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.quantitySelector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quantityLabel {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.quantityButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quantityButton:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.quantityButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantityValue {
+  width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--text-lg);
+}
+
+/* Total Section */
+.totalSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.totalRow.grandTotal {
+  padding-top: var(--spacing-2);
+  border-top: 1px solid var(--color-border-light);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+}
+
+/* Guarantee */
+.guarantee {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background-color: var(--color-success-light);
+  border-radius: var(--radius-lg);
+  color: #059669;
+}
+
+.guarantee div {
+  display: flex;
+  flex-direction: column;
+}
+
+.guarantee strong {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.guarantee span {
+  font-size: var(--text-xs);
+  opacity: 0.9;
+}
+
+/* Modal Content */
+.confirmContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.confirmContent p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.proxyNote {
+  padding: var(--spacing-3);
+  background-color: var(--color-info-light);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.confirmDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+}
+
+.confirmRow {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Not Found */
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-16);
+  text-align: center;
+}
+
+.notFound h1 {
+  font-size: var(--text-2xl);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2);
+}
+
+.notFound p {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-6);
+}

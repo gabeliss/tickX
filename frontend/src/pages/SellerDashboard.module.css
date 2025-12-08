@@ -1,0 +1,449 @@
+.page {
+  min-height: 100%;
+  background-color: var(--color-bg-primary);
+  padding: var(--spacing-6) 0;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--spacing-6);
+  }
+}
+
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+@media (min-width: 640px) {
+  .header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.title {
+  font-family: var(--font-accent);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-1) 0 0;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.statIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-family: var(--font-accent);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Actions Card */
+.actionsCard {
+  margin-bottom: var(--spacing-6);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+}
+
+.cardTitle {
+  font-family: var(--font-accent);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.actionsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.actionItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.actionContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.actionTitle {
+  display: block;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.actionMeta {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.actionLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.actionLink:hover {
+  text-decoration: underline;
+}
+
+/* Listings Card */
+.listingsCard {
+  overflow: hidden;
+}
+
+.listingsHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+@media (min-width: 640px) {
+  .listingsHeader {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: var(--spacing-1);
+  background-color: var(--color-neutral-100);
+  padding: var(--spacing-1);
+  border-radius: var(--radius-md);
+}
+
+.tab {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--color-text-primary);
+}
+
+.tab.activeTab {
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Table Header */
+.tableHeader {
+  display: none;
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-neutral-50);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 1024px) {
+  .tableHeader {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1.5fr 1fr 48px;
+    gap: var(--spacing-4);
+    align-items: center;
+  }
+}
+
+/* Table Body */
+.tableBody {
+  min-height: 200px;
+}
+
+/* Listing Row */
+.listingRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+@media (min-width: 1024px) {
+  .listingRow {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1.5fr 1fr 48px;
+    gap: var(--spacing-4);
+    align-items: center;
+  }
+}
+
+.listingRow:last-child {
+  border-bottom: none;
+}
+
+.listingRow:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.listingInfo {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.listingImage {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.listingDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.listingTitle {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listingTitle:hover {
+  color: var(--color-primary);
+}
+
+.listingMeta {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.listingDate {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.listingType {
+  display: flex;
+  align-items: center;
+}
+
+.listingPrice {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceValue {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.buyNowValue {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.listingBids {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.bidCount {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.watcherCount {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.listingTime {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.listingTime .endingSoon {
+  color: var(--color-accent);
+}
+
+.activeStatus {
+  color: var(--color-success);
+}
+
+.listingActions {
+  position: relative;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.actionButton:hover {
+  background-color: var(--color-neutral-100);
+  color: var(--color-text-primary);
+}
+
+.actionMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 160px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  overflow: hidden;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.menuItem:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.menuItem.danger {
+  color: var(--color-error);
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12);
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.emptyState h3 {
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+  margin: var(--spacing-4) 0 var(--spacing-2);
+}
+
+.emptyState p {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-4);
+}
