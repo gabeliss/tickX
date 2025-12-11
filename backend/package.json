@@ -1,0 +1,33 @@
+{
+  "name": "@tickx/backend",
+  "version": "1.0.0",
+  "description": "TickX Backend - AWS CDK Infrastructure and Lambda Functions",
+  "main": "dist/lib/tickx-stack.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.948.0",
+    "@aws-sdk/client-ssm": "^3.948.0",
+    "@aws-sdk/lib-dynamodb": "^3.948.0",
+    "@types/aws-lambda": "^8.10.159",
+    "aws-cdk-lib": "^2.232.1",
+    "constructs": "^10.4.3",
+    "esbuild": "^0.27.1",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "@types/source-map-support": "^0.5.10",
+    "aws-cdk": "^2.1033.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "type": "commonjs"
+}
