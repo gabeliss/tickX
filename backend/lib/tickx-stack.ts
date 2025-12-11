@@ -117,11 +117,11 @@ export class TickXStack extends cdk.Stack {
     // Add SSM parameter name to environment
     syncEventsLambda.addEnvironment('TM_API_KEY_PARAM', TM_API_KEY_PARAM_NAME);
 
-    // Schedule: Run every hour
+    // Schedule: Run once daily at 4 AM UTC
     const syncEventsRule = new events.Rule(this, 'SyncEventsRule', {
       ruleName: 'TickX-SyncEventsSchedule',
-      schedule: events.Schedule.rate(cdk.Duration.hours(1)),
-      description: 'Triggers event sync from Ticketmaster every hour',
+      schedule: events.Schedule.cron({ hour: '4', minute: '0' }),
+      description: 'Triggers event sync from Ticketmaster daily at 4 AM UTC',
     });
     syncEventsRule.addTarget(new targets.LambdaFunction(syncEventsLambda));
 

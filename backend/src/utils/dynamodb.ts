@@ -12,6 +12,7 @@ import {
   QueryCommand,
   BatchWriteCommand,
   UpdateCommand,
+  ScanCommand,
 } from '@aws-sdk/lib-dynamodb';
 import {
   Event,
@@ -455,4 +456,178 @@ export async function setEventFeatured(
       },
     })
   );
+}
+
+/**
+ * Search events by keyword (scans table, filters by name/attractions)
+ * This is a simple MVP implementation - consider OpenSearch for production
+ */
+export async function searchEvents(
+  keyword: string,
+  params: {
+    city?: string;
+    category?: string;
+    pageSize?: number;
+  } = {}
+): Promise<PaginatedResponse<Event>> {
+  const pageSize = params.pageSize || 20;
+  const keywordLower = keyword.toLowerCase();
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Build filter expression
+  // We filter for: name contains keyword OR any attraction name contains keyword
+  // Also filter for future events only
+  let filterExpression = 'entityType = :entityType AND #data.localDate >= :today AND (contains(#dataNameLower, :keyword)';
+  const expressionAttributeValues: Record<string, unknown> = {
+    ':entityType': 'EVENT',
+    ':today': today,
+    ':keyword': keywordLower,
+  };
+  const expressionAttributeNames: Record<string, string> = {
+    '#data': 'data',
+    '#dataNameLower': 'searchName', // We'll need to add this field during sync
+  };
+
+  // For now, just search the name field (case-insensitive via lowercase)
+  // Close the OR group
+  filterExpression += ')';
+
+  // Add city filter if provided
+  if (params.city) {
+    filterExpression += ' AND #data.venueCity = :city';
+    expressionAttributeValues[':city'] = params.city === 'chicago' ? 'Chicago' : params.city === 'new_york' ? 'New York' : params.city;
+  }
+
+  // Add category filter if provided
+  if (params.category) {
+    filterExpression += ' AND #data.category = :category';
+    expressionAttributeValues[':category'] = params.category;
+  }
+
+  const result = await docClient.send(
+    new ScanCommand({
+      TableName: EVENTS_TABLE,
+      FilterExpression: filterExpression,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+      Limit: 1000, // Scan up to 1000 items, then filter
+    })
+  );
+
+  let events = (result.Items as EventItem[])?.map(item => item.data) || [];
+
+  // Sort by date ascending
+  events.sort((a, b) => a.localDate.localeCompare(b.localDate));
+
+  // Limit results
+  events = events.slice(0, pageSize);
+
+  return {
+    data: events,
+    pagination: {
+      page: 0,
+      pageSize,
+      totalItems: events.length,
+      totalPages: 1,
+      hasMore: (result.Items?.length || 0) > pageSize,
+    },
+  };
+}
+
+/**
+ * Search events by keyword - simpler version that filters after scan
+ * Searches event name and attraction names
+ */
+export async function searchEventsSimple(
+  keyword: string,
+  params: {
+    city?: string;
+    category?: string;
+    pageSize?: number;
+  } = {}
+): Promise<PaginatedResponse<Event>> {
+  const pageSize = params.pageSize || 20;
+  const keywordLower = keyword.toLowerCase();
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Scan all events with pagination (not ideal for large datasets, but fine for MVP with ~10k events)
+  const allItems: EventItem[] = [];
+  let lastEvaluatedKey: Record<string, unknown> | undefined;
+
+  do {
+    const result = await docClient.send(
+      new ScanCommand({
+        TableName: EVENTS_TABLE,
+        FilterExpression: 'entityType = :entityType',
+        ExpressionAttributeValues: {
+          ':entityType': 'EVENT',
+        },
+        ExclusiveStartKey: lastEvaluatedKey,
+      })
+    );
+
+    if (result.Items) {
+      allItems.push(...(result.Items as EventItem[]));
+    }
+
+    lastEvaluatedKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
+  } while (lastEvaluatedKey);
+
+  let events = allItems.map(item => item.data);
+
+  // Filter in JavaScript for more flexibility
+  events = events.filter(event => {
+    // Skip invalid events
+    if (!event || !event.localDate || !event.name) return false;
+
+    // Only future events
+    if (event.localDate < today) return false;
+
+    // City filter
+    if (params.city) {
+      const venueCity = event.venueCity || '';
+      const cityMatch = params.city === 'chicago'
+        ? venueCity === 'Chicago'
+        : params.city === 'new_york'
+        ? venueCity === 'New York'
+        : venueCity.toLowerCase().includes(params.city.toLowerCase());
+      if (!cityMatch) return false;
+    }
+
+    // Category filter
+    if (params.category && event.category !== params.category) return false;
+
+    // Keyword search in name
+    if (event.name && event.name.toLowerCase().includes(keywordLower)) return true;
+
+    // Keyword search in attractions
+    if (event.attractions?.some(a => a.name && a.name.toLowerCase().includes(keywordLower))) return true;
+
+    // Keyword search in genre/subGenre
+    if (event.genre && event.genre.toLowerCase().includes(keywordLower)) return true;
+    if (event.subGenre && event.subGenre.toLowerCase().includes(keywordLower)) return true;
+
+    // Keyword search in venue name
+    if (event.venueName && event.venueName.toLowerCase().includes(keywordLower)) return true;
+
+    return false;
+  });
+
+  // Sort by date ascending
+  events.sort((a, b) => a.localDate.localeCompare(b.localDate));
+
+  // Limit results
+  const totalMatches = events.length;
+  events = events.slice(0, pageSize);
+
+  return {
+    data: events,
+    pagination: {
+      page: 0,
+      pageSize,
+      totalItems: totalMatches,
+      totalPages: Math.ceil(totalMatches / pageSize),
+      hasMore: totalMatches > pageSize,
+    },
+  };
 }

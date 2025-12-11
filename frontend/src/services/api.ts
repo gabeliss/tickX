@@ -79,6 +79,7 @@ export interface EventSearchParams {
   dateTo?: string;
   pageSize?: number;
   cursor?: string;
+  keyword?: string;
 }
 
 export interface VenueSearchParams {
@@ -123,6 +124,22 @@ export async function getEvents(params: EventSearchParams = {}): Promise<Paginat
     dateTo: params.dateTo,
     pageSize: params.pageSize?.toString(),
     cursor: params.cursor,
+    keyword: params.keyword,
+  });
+}
+
+/**
+ * Search events by keyword
+ */
+export async function searchEvents(
+  keyword: string,
+  params: { city?: string; category?: EventCategory; pageSize?: number } = {}
+): Promise<PaginatedResponse<ApiEvent>> {
+  return fetchApi<PaginatedResponse<ApiEvent>>('/events', {
+    keyword,
+    city: params.city,
+    category: params.category,
+    pageSize: params.pageSize?.toString(),
   });
 }
 

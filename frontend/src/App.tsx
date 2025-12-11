@@ -7,6 +7,7 @@ import {
   SellerDashboard,
   CreateListing,
   GroupPurchase,
+  Search,
 } from './pages';
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
           <Route path="/groups/create" element={<GroupPurchase />} />
 
           {/* Search & Browse */}
-          <Route path="/search" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/events" element={<Home />} />
 
           {/* User Routes (placeholder - uses Home for now) */}

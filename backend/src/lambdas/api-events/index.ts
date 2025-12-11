@@ -12,6 +12,7 @@ import {
   getEventsByCity,
   getEventsByCategory,
   getEventsByVenue,
+  searchEventsSimple,
 } from '../../utils/dynamodb';
 import { EventCategory, Event } from '../../../../shared/types';
 
@@ -68,12 +69,25 @@ export async function handler(
       dateTo,
       pageSize: pageSizeStr,
       cursor,
+      keyword,
+      q, // Alternative query parameter for search
     } = queryParams;
 
     const pageSize = Math.min(parseInt(pageSizeStr || '50', 10), 100);
+    const searchKeyword = keyword || q;
 
     // Determine which query to use based on filters
     let result;
+
+    // If keyword search is provided, use search function
+    if (searchKeyword) {
+      result = await searchEventsSimple(searchKeyword, {
+        city,
+        category: category && isValidCategory(category) ? category : undefined,
+        pageSize,
+      });
+      return response(200, result);
+    }
 
     if (venueId) {
       // Query by venue

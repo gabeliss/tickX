@@ -9,6 +9,7 @@ import {
   getEvent,
   getVenues,
   getVenue,
+  searchEvents,
   transformApiEvent,
   transformApiVenue,
   type EventSearchParams,
@@ -231,4 +232,65 @@ export function useVenue(venueId: string | undefined): UseVenueResult {
   }, [fetchVenue]);
 
   return { venue, loading, error, refresh: fetchVenue };
+}
+
+// =============================================================================
+// useSearch Hook (keyword search)
+// =============================================================================
+
+interface UseSearchOptions {
+  city?: string;
+  category?: EventCategory;
+  pageSize?: number;
+}
+
+interface UseSearchResult {
+  events: Event[];
+  loading: boolean;
+  error: string | null;
+  totalResults: number;
+  search: (keyword: string) => Promise<void>;
+  clear: () => void;
+}
+
+export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [totalResults, setTotalResults] = useState(0);
+
+  const { city, category, pageSize = 20 } = options;
+
+  const search = useCallback(async (keyword: string) => {
+    if (!keyword.trim()) {
+      setEvents([]);
+      setTotalResults(0);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await searchEvents(keyword, { city, category, pageSize });
+      const transformedEvents = response.data.map(transformApiEvent);
+
+      setEvents(transformedEvents);
+      setTotalResults(response.pagination.totalItems);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Search failed');
+      setEvents([]);
+      setTotalResults(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [city, category, pageSize]);
+
+  const clear = useCallback(() => {
+    setEvents([]);
+    setTotalResults(0);
+    setError(null);
+  }, []);
+
+  return { events, loading, error, totalResults, search, clear };
 }
