@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout';
 import {
   Home,
+  Events,
   EventDetail,
   ListingDetail,
   SellerDashboard,
@@ -31,7 +32,7 @@ function App() {
 
           {/* Search & Browse */}
           <Route path="/search" element={<Search />} />
-          <Route path="/events" element={<Home />} />
+          <Route path="/events" element={<Events />} />
 
           {/* User Routes (placeholder - uses Home for now) */}
           <Route path="/profile" element={<Home />} />

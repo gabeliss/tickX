@@ -1,4 +1,5 @@
 export { Home } from './Home';
+export { Events } from './Events';
 export { EventDetail } from './EventDetail';
 export { ListingDetail } from './ListingDetail';
 export { SellerDashboard } from './SellerDashboard';
