@@ -149,14 +149,46 @@ public class VenueRepository {
     private Venue parseVenue(Map<String, AttributeValue> item) {
         try {
             AttributeValue dataAttr = item.get("data");
-            if (dataAttr == null || dataAttr.s() == null) {
+            if (dataAttr == null) {
                 return null;
             }
-            return objectMapper.readValue(dataAttr.s(), Venue.class);
-        } catch (JsonProcessingException e) {
+
+            // Handle both String type (new Java format) and Map type (TypeScript format)
+            if (dataAttr.s() != null) {
+                return objectMapper.readValue(dataAttr.s(), Venue.class);
+            } else if (dataAttr.m() != null && !dataAttr.m().isEmpty()) {
+                Map<String, Object> dataMap = convertAttributeMapToJavaMap(dataAttr.m());
+                return objectMapper.convertValue(dataMap, Venue.class);
+            }
+            return null;
+        } catch (Exception e) {
             log.error("Error parsing venue: {}", e.getMessage());
             return null;
         }
+    }
+
+    private Map<String, Object> convertAttributeMapToJavaMap(Map<String, AttributeValue> attrMap) {
+        Map<String, Object> result = new HashMap<>();
+        for (Map.Entry<String, AttributeValue> entry : attrMap.entrySet()) {
+            result.put(entry.getKey(), convertAttributeValue(entry.getValue()));
+        }
+        return result;
+    }
+
+    private Object convertAttributeValue(AttributeValue av) {
+        if (av.s() != null) return av.s();
+        if (av.n() != null) {
+            String num = av.n();
+            if (num.contains(".")) return Double.parseDouble(num);
+            return Long.parseLong(num);
+        }
+        if (av.bool() != null) return av.bool();
+        if (av.m() != null && !av.m().isEmpty()) return convertAttributeMapToJavaMap(av.m());
+        if (av.l() != null && !av.l().isEmpty()) {
+            return av.l().stream().map(this::convertAttributeValue).collect(Collectors.toList());
+        }
+        if (av.nul() != null && av.nul()) return null;
+        return null;
     }
 
     private String encodeCursor(Map<String, AttributeValue> lastKey) {

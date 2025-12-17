@@ -326,23 +326,52 @@ public class EventRepository {
     private Event parseEvent(Map<String, AttributeValue> item) {
         try {
             AttributeValue dataAttr = item.get("data");
-            if (dataAttr == null || dataAttr.s() == null) {
+            if (dataAttr == null) {
                 log.warn("Event item has no 'data' attribute");
                 return null;
             }
-            String json = dataAttr.s();
-            log.debug("Parsing event JSON: {}", json.substring(0, Math.min(200, json.length())));
-            return objectMapper.readValue(json, Event.class);
-        } catch (JsonProcessingException e) {
-            log.error("Error parsing event: {} - {}", e.getMessage(), e.getClass().getSimpleName());
-            // Log first 500 chars of the data for debugging
-            AttributeValue dataAttr = item.get("data");
-            if (dataAttr != null && dataAttr.s() != null) {
-                String data = dataAttr.s();
-                log.error("Failed JSON (first 500 chars): {}", data.substring(0, Math.min(500, data.length())));
+
+            // Handle both String type (new Java format) and Map type (TypeScript format)
+            if (dataAttr.s() != null) {
+                // Data stored as JSON string
+                String json = dataAttr.s();
+                return objectMapper.readValue(json, Event.class);
+            } else if (dataAttr.m() != null && !dataAttr.m().isEmpty()) {
+                // Data stored as DynamoDB Map (from TypeScript DynamoDBDocumentClient)
+                Map<String, Object> dataMap = convertAttributeMapToJavaMap(dataAttr.m());
+                return objectMapper.convertValue(dataMap, Event.class);
+            } else {
+                log.warn("Event 'data' attribute is neither String nor Map");
+                return null;
             }
+        } catch (Exception e) {
+            log.error("Error parsing event: {} - {}", e.getMessage(), e.getClass().getSimpleName());
             return null;
         }
+    }
+
+    private Map<String, Object> convertAttributeMapToJavaMap(Map<String, AttributeValue> attrMap) {
+        Map<String, Object> result = new HashMap<>();
+        for (Map.Entry<String, AttributeValue> entry : attrMap.entrySet()) {
+            result.put(entry.getKey(), convertAttributeValue(entry.getValue()));
+        }
+        return result;
+    }
+
+    private Object convertAttributeValue(AttributeValue av) {
+        if (av.s() != null) return av.s();
+        if (av.n() != null) {
+            String num = av.n();
+            if (num.contains(".")) return Double.parseDouble(num);
+            return Long.parseLong(num);
+        }
+        if (av.bool() != null) return av.bool();
+        if (av.m() != null && !av.m().isEmpty()) return convertAttributeMapToJavaMap(av.m());
+        if (av.l() != null && !av.l().isEmpty()) {
+            return av.l().stream().map(this::convertAttributeValue).collect(Collectors.toList());
+        }
+        if (av.nul() != null && av.nul()) return null;
+        return null;
     }
 
     private String encodeCursor(Map<String, AttributeValue> lastKey) {
