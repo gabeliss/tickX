@@ -10,7 +10,4 @@ new TickXStack(app, 'TickXStack', {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
   },
-  description: 'TickX - Ticket Marketplace Infrastructure',
 });
-
-app.synth();

@@ -17,24 +17,9 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "outDir": "dist",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@tickx/shared/*": ["../shared/*"]
-    }
+    "outDir": "./dist",
+    "rootDir": "./lib"
   },
-  "include": [
-    "lib/**/*",
-    "src/**/*",
-    "bin/**/*",
-    "../shared/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "cdk.out",
-    "dist"
-  ]
+  "include": ["lib/**/*", "bin/**/*"],
+  "exclude": ["node_modules"]
 }

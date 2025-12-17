@@ -1,0 +1,15 @@
+target/
+*.class
+*.jar
+*.war
+*.log
+.git
+.gitignore
+.idea
+*.iml
+.DS_Store
+
+# CDK directories - critical to exclude to avoid recursive copy
+cdk/
+cdk.out/
+node_modules/
