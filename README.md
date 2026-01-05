@@ -8,6 +8,7 @@ A ticket marketplace application that aggregates events from Ticketmaster and di
 - **Backend**: Java 21 + Spring Boot 3 + ECS Fargate
 - **Database**: DynamoDB
 - **Infrastructure**: AWS CDK (TypeScript)
+- **Build Tool**: Make
 - **Data Source**: Ticketmaster Discovery API
 
 ## Project Structure
@@ -29,12 +30,18 @@ tickX/
 │   │       ├── service/   # Business logic
 │   │       ├── repository/# DynamoDB repositories
 │   │       └── model/     # Domain models
-│   ├── cdk/               # AWS CDK infrastructure
 │   ├── Dockerfile
 │   └── pom.xml
 │
-└── shared/                # Shared TypeScript types (frontend)
-    └── types/
+├── infrastructure/        # AWS CDK infrastructure
+│   └── cdk/               # CDK application
+│       ├── lib/           # CDK stacks
+│       └── bin/           # CDK app entry
+│
+├── shared/                # Shared TypeScript types
+│   └── types/
+│
+└── Makefile               # Build orchestration
 ```
 
 ## Prerequisites
@@ -44,6 +51,7 @@ tickX/
 - Maven 3.9+
 - Docker
 - AWS CLI configured with credentials
+- Make (usually pre-installed on macOS/Linux)
 
 ## Getting Started
 
@@ -64,7 +72,21 @@ export AWS_SECRET_ACCESS_KEY=<your-secret-key>
 export AWS_DEFAULT_REGION=us-east-1
 ```
 
-### 3. Backend Setup
+### 3. Build with Make
+
+#### Build entire workspace
+
+```bash
+# Build all components
+make build
+
+# Or build individual components
+make build-backend
+make build-frontend
+make build-infrastructure
+```
+
+### 4. Backend Setup
 
 #### Run Locally with Docker (recommended)
 
@@ -97,21 +119,16 @@ java -jar target/tickx-backend-0.0.1-SNAPSHOT.jar
 #### Deploy to AWS
 
 ```bash
-cd backend/cdk
+# Deploy infrastructure
+make deploy
 
-# Install dependencies
-npm install
-
-# Preview what will be deployed
-npm run diff
-
-# Deploy to AWS
-npm run deploy
+# Or full deployment (infrastructure + Docker image)
+make deploy-all
 ```
 
 After deployment, note the `ApiUrl` output - this is your backend URL.
 
-### 4. Frontend Setup
+### 5. Frontend Setup
 
 ```bash
 cd frontend
@@ -130,6 +147,19 @@ The app will be available at `http://localhost:5173`
 
 ## Available Scripts
 
+### Workspace (Root)
+
+| Command | Description |
+|---------|-------------|
+| `make build` | Build all components |
+| `make deploy` | Deploy infrastructure to AWS |
+| `make docker-build` | Build and push Docker image to ECR |
+| `make deploy-all` | Full deployment (infrastructure + image) |
+| `make clean` | Clean all build artifacts |
+| `make dev-frontend` | Start frontend development server |
+| `make dev-backend` | Start backend development server |
+| `make test` | Run all tests |
+
 ### Frontend
 
 | Command | Description |
@@ -143,14 +173,15 @@ The app will be available at `http://localhost:5173`
 
 | Command | Description |
 |---------|-------------|
-| `./mvnw clean package` | Build the project |
-| `./mvnw spring-boot:run` | Run locally |
-| `./mvnw test` | Run tests |
+| `mvn clean package` | Build the project |
+| `mvn spring-boot:run` | Run locally |
+| `mvn test` | Run tests |
 
-### Infrastructure (backend/cdk)
+### Infrastructure
 
 | Command | Description |
 |---------|-------------|
+| `npm run build` | Build CDK app |
 | `npm run synth` | Generate CloudFormation template |
 | `npm run diff` | Preview infrastructure changes |
 | `npm run deploy` | Deploy to AWS |

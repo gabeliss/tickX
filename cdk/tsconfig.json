@@ -17,8 +17,7 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "outDir": "./dist",
-    "rootDir": "./lib"
+    "outDir": "./dist"
   },
   "include": ["lib/**/*", "bin/**/*"],
   "exclude": ["node_modules"]
