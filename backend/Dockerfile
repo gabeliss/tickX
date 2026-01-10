@@ -1,17 +1,21 @@
 # Build stage
-FROM maven:3.9-eclipse-temurin-21-alpine AS build
+FROM --platform=linux/amd64 gradle:8.5-jdk17-alpine AS build
 WORKDIR /app
 
-# Copy pom.xml and download dependencies (cached layer)
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
+# Copy Gradle files
+COPY build.gradle settings.gradle ./
+COPY gradle gradle
+COPY gradlew ./
+
+# Download dependencies (cached layer)
+RUN ./gradlew dependencies --no-daemon
 
 # Copy source and build
 COPY src ./src
-RUN mvn package -DskipTests -B
+RUN ./gradlew bootJar --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:21-jre-alpine
+FROM --platform=linux/amd64 eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Create non-root user
@@ -19,7 +23,7 @@ RUN addgroup -S tickx && adduser -S tickx -G tickx
 USER tickx
 
 # Copy built jar
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 
 # Expose port
 EXPOSE 8080

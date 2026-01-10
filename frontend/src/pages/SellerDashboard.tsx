@@ -15,14 +15,15 @@ import {
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
 import { Button, Card, Badge } from '../components/common';
-import { useCountdown } from '../hooks/useCountdown';
-import { mockListings, currentUser } from '../data/mockData';
+import { useCountdown, useSellerListings } from '../hooks';
+import { currentUser } from '../data/mockData';
 import type { Listing, ListingType } from '../types';
 import styles from './SellerDashboard.module.css';
 
-const ListingRow: React.FC<{ listing: Listing }> = ({ listing }) => {
+const ListingRow: React.FC<{ listing: Listing; onDelete: (id: string) => Promise<boolean> }> = ({ listing, onDelete }) => {
   const countdown = useCountdown(listing.auctionEndTime);
   const [showMenu, setShowMenu] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -40,6 +41,15 @@ const ListingRow: React.FC<{ listing: Listing }> = ({ listing }) => {
       declining: 'Declining',
     };
     return labels[type];
+  };
+
+  const handleDelete = async () => {
+    if (confirm('Are you sure you want to delete this listing?')) {
+      setIsDeleting(true);
+      await onDelete(listing.id);
+      setIsDeleting(false);
+      setShowMenu(false);
+    }
   };
 
   const isAuction = listing.listingType === 'auction' || listing.listingType === 'hybrid';
@@ -133,8 +143,8 @@ const ListingRow: React.FC<{ listing: Listing }> = ({ listing }) => {
             <Link to={`/sell/edit/${listing.id}`} className={styles.menuItem}>
               <Edit size={16} /> Edit
             </Link>
-            <button className={clsx(styles.menuItem, styles.danger)}>
-              <Trash2 size={16} /> Remove
+            <button className={clsx(styles.menuItem, styles.danger)} onClick={handleDelete} disabled={isDeleting}>
+              <Trash2 size={16} /> {isDeleting ? 'Deleting...' : 'Remove'}
             </button>
           </div>
         )}
@@ -146,12 +156,10 @@ const ListingRow: React.FC<{ listing: Listing }> = ({ listing }) => {
 export const SellerDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'active' | 'sold' | 'expired'>('active');
+  const { listings, isLoading, error, deleteListing } = useSellerListings(currentUser.id);
 
-  // Filter listings by current user (in real app, would come from API)
-  const myListings = mockListings.filter((l) => l.sellerId === currentUser.id || l.sellerId === 'user-1');
-
-  const activeListings = myListings.filter((l) => l.status === 'active');
-  const soldListings = myListings.filter((l) => l.status === 'sold');
+  const activeListings = listings.filter((l) => l.status === 'active');
+  const soldListings = listings.filter((l) => l.status === 'sold');
 
   // Mock stats
   const stats = {
@@ -304,9 +312,13 @@ export const SellerDashboard: React.FC = () => {
 
           {/* Table Body */}
           <div className={styles.tableBody}>
-            {activeTab === 'active' && activeListings.length > 0 ? (
+            {isLoading ? (
+              <div className={styles.loading}>Loading listings...</div>
+            ) : error ? (
+              <div className={styles.error}>Error: {error}</div>
+            ) : activeTab === 'active' && activeListings.length > 0 ? (
               activeListings.map((listing) => (
-                <ListingRow key={listing.id} listing={listing} />
+                <ListingRow key={listing.id} listing={listing} onDelete={deleteListing} />
               ))
             ) : activeTab === 'active' ? (
               <div className={styles.emptyState}>

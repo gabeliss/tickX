@@ -2,7 +2,6 @@ package com.tickx.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tickx.dto.PaginatedResponse;
 import com.tickx.model.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,7 @@ public class EventRepository {
     private final DynamoDbClient dynamoDbClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${aws.dynamodb.events-table}")
+    @Value("${EVENTS_TABLE}")
     private String eventsTable;
 
     public Optional<Event> findById(String eventId) {
@@ -47,8 +46,8 @@ public class EventRepository {
         }
     }
 
-    public PaginatedResponse<Event> findByCity(String city, String dateFrom, String dateTo,
-                                                int pageSize, String cursor) {
+    public List<Event> findByCity(String city, String dateFrom, String dateTo,
+                                   int pageSize, String cursor) {
         String cityKey = city.toLowerCase().replace(" ", "_");
         String today = LocalDate.now().toString();
         String from = dateFrom != null ? dateFrom : today;
@@ -80,15 +79,15 @@ public class EventRepository {
                     ? encodeCursor(response.lastEvaluatedKey())
                     : null;
 
-            return PaginatedResponse.of(events, pageSize, nextCursor != null, nextCursor);
+            return events;
         } catch (Exception e) {
             log.error("Error querying events by city {}: {}", city, e.getMessage());
-            return PaginatedResponse.of(List.of(), pageSize, false, null);
+            return List.of();
         }
     }
 
-    public PaginatedResponse<Event> findByCategory(String category, String dateFrom, String dateTo,
-                                                    int pageSize, String cursor) {
+    public List<Event> findByCategory(String category, String dateFrom, String dateTo,
+                                       int pageSize, String cursor) {
         String today = LocalDate.now().toString();
         String from = dateFrom != null ? dateFrom : today;
         String to = dateTo != null ? dateTo : "2099-12-31";
@@ -119,15 +118,15 @@ public class EventRepository {
                     ? encodeCursor(response.lastEvaluatedKey())
                     : null;
 
-            return PaginatedResponse.of(events, pageSize, nextCursor != null, nextCursor);
+            return events;
         } catch (Exception e) {
             log.error("Error querying events by category {}: {}", category, e.getMessage());
-            return PaginatedResponse.of(List.of(), pageSize, false, null);
+            return List.of();
         }
     }
 
-    public PaginatedResponse<Event> findByVenue(String venueId, String dateFrom, String dateTo,
-                                                 int pageSize, String cursor) {
+    public List<Event> findByVenue(String venueId, String dateFrom, String dateTo,
+                                    int pageSize, String cursor) {
         String today = LocalDate.now().toString();
         String from = dateFrom != null ? dateFrom : today;
         String to = dateTo != null ? dateTo : "2099-12-31";
@@ -158,14 +157,14 @@ public class EventRepository {
                     ? encodeCursor(response.lastEvaluatedKey())
                     : null;
 
-            return PaginatedResponse.of(events, pageSize, nextCursor != null, nextCursor);
+            return events;
         } catch (Exception e) {
             log.error("Error querying events by venue {}: {}", venueId, e.getMessage());
-            return PaginatedResponse.of(List.of(), pageSize, false, null);
+            return List.of();
         }
     }
 
-    public PaginatedResponse<Event> searchByKeyword(String keyword, String city, String category, int pageSize) {
+    public List<Event> searchByKeyword(String keyword, String city, String category, int pageSize) {
         String keywordLower = keyword.toLowerCase();
         String today = LocalDate.now().toString();
 
@@ -219,10 +218,10 @@ public class EventRepository {
                     .limit(pageSize)
                     .collect(Collectors.toList());
 
-            return PaginatedResponse.of(filtered, pageSize, filtered.size() >= pageSize, null);
+            return filtered;
         } catch (Exception e) {
             log.error("Error searching events: {}", e.getMessage());
-            return PaginatedResponse.of(List.of(), pageSize, false, null);
+            return List.of();
         }
     }
 

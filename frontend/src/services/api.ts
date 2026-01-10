@@ -118,7 +118,7 @@ async function fetchApi<T>(endpoint: string, params: Record<string, string | und
  * Get events with optional filters
  */
 export async function getEvents(params: EventSearchParams = {}): Promise<PaginatedResponse<ApiEvent>> {
-  return fetchApi<PaginatedResponse<ApiEvent>>('/events', {
+  const events = await fetchApi<ApiEvent[]>('/events', {
     city: params.city,
     category: params.category,
     venueId: params.venueId,
@@ -128,6 +128,18 @@ export async function getEvents(params: EventSearchParams = {}): Promise<Paginat
     cursor: params.cursor,
     keyword: params.keyword,
   });
+  
+  // Transform direct array response to paginated format
+  return {
+    data: events,
+    pagination: {
+      page: 1,
+      pageSize: params.pageSize || 20,
+      totalItems: events.length,
+      totalPages: 1,
+      hasMore: false,
+    },
+  };
 }
 
 /**
@@ -137,37 +149,63 @@ export async function searchEvents(
   keyword: string,
   params: { city?: string; category?: EventCategory; pageSize?: number } = {}
 ): Promise<PaginatedResponse<ApiEvent>> {
-  return fetchApi<PaginatedResponse<ApiEvent>>('/events', {
+  const events = await fetchApi<ApiEvent[]>('/events', {
     keyword,
     city: params.city,
     category: params.category,
     pageSize: params.pageSize?.toString(),
   });
+  
+  // Transform direct array response to paginated format
+  return {
+    data: events,
+    pagination: {
+      page: 1,
+      pageSize: params.pageSize || 20,
+      totalItems: events.length,
+      totalPages: 1,
+      hasMore: false,
+    },
+  };
 }
 
 /**
  * Get a single event by ID
  */
 export async function getEvent(eventId: string): Promise<{ data: ApiEvent }> {
-  return fetchApi<{ data: ApiEvent }>(`/events/${eventId}`);
+  const event = await fetchApi<ApiEvent>(`/events/${eventId}`);
+  return { data: event };
 }
 
 /**
  * Get venues with optional filters
  */
 export async function getVenues(params: VenueSearchParams = {}): Promise<PaginatedResponse<ApiVenue>> {
-  return fetchApi<PaginatedResponse<ApiVenue>>('/venues', {
+  const venues = await fetchApi<ApiVenue[]>('/venues', {
     city: params.city,
     pageSize: params.pageSize?.toString(),
     cursor: params.cursor,
   });
+  
+  // Transform direct array response to paginated format
+  return {
+    data: venues,
+    pagination: {
+      page: 1,
+      pageSize: params.pageSize || 50,
+      totalItems: venues.length,
+      totalPages: 1,
+      hasMore: false,
+    },
+  };
 }
 
 /**
  * Get a single venue by ID
  */
 export async function getVenue(venueId: string): Promise<{ data: ApiVenue }> {
-  return fetchApi<{ data: ApiVenue }>(`/venues/${venueId}`);
+  const venue = await fetchApi<ApiVenue>(`/venues/${venueId}`);
+  return { data: venue };
 }
 
 // =============================================================================

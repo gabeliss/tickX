@@ -17,7 +17,8 @@ import {
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
 import { Button, Card, Input, Select } from '../components/common';
-import { mockEvents } from '../data/mockData';
+import { useEvents, useCreateListing } from '../hooks';
+import { currentUser } from '../data/mockData';
 import type { ListingType, Event } from '../types';
 import styles from './CreateListing.module.css';
 
@@ -69,7 +70,8 @@ const LISTING_TYPES: {
 export const CreateListing: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<Step>('tickets');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { create: createListingApi, isLoading: isSubmitting, error: submitError } = useCreateListing();
+  const { events, loading: eventsLoading } = useEvents();
 
   // Form state
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -111,7 +113,7 @@ export const CreateListing: React.FC = () => {
     }).format(price);
   };
 
-  const filteredEvents = mockEvents.filter((event) =>
+  const filteredEvents = events.filter((event) =>
     event.name.toLowerCase().includes(eventSearch.toLowerCase())
   );
 
@@ -144,11 +146,33 @@ export const CreateListing: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    navigate('/dashboard');
+    if (!selectedEvent) return;
+    
+    const listingData = {
+      sellerId: currentUser.id,
+      eventId: selectedEvent.id,
+      listingType,
+      section,
+      row,
+      seats: seats.split(',').map(s => s.trim()).filter(Boolean),
+      quantity: parseInt(quantity),
+      startingPrice: parseFloat(startingPrice),
+      currentPrice: parseFloat(startingPrice),
+      buyNowPrice: buyNowPrice ? parseFloat(buyNowPrice) : undefined,
+      reservePrice: reservePrice ? parseFloat(reservePrice) : undefined,
+      floorPrice: floorPrice ? parseFloat(floorPrice) : undefined,
+      auctionEndTime: (listingType === 'auction' || listingType === 'hybrid') 
+        ? new Date(Date.now() + parseInt(auctionDuration) * 24 * 60 * 60 * 1000).toISOString()
+        : undefined,
+      allowSplitting: allowSplitting !== 'none',
+      minQuantity: allowSplitting === 'min2' ? 2 : allowSplitting === 'all' ? 1 : parseInt(quantity),
+      bidIncrement: bidIncrement === 'recommended' ? 5 : 10,
+    };
+    
+    const result = await createListingApi(listingData);
+    if (result) {
+      navigate('/dashboard');
+    }
   };
 
   const renderStepContent = () => {
@@ -194,6 +218,11 @@ export const CreateListing: React.FC = () => {
                 />
               </div>
 
+            {eventsLoading ? (
+              <div className={styles.loading}>Loading events...</div>
+            ) : filteredEvents.length === 0 ? (
+              <div className={styles.noEvents}>No events found</div>
+            ) : (
               <div className={styles.eventList}>
                 {filteredEvents.slice(0, 5).map((event) => (
                   <button
@@ -218,6 +247,7 @@ export const CreateListing: React.FC = () => {
                   </button>
                 ))}
               </div>
+            )}
             </div>
           </div>
         );
@@ -646,13 +676,18 @@ export const CreateListing: React.FC = () => {
           <div className={styles.navSpacer} />
           {currentStep === 'review' ? (
             <Button onClick={handleSubmit} loading={isSubmitting} disabled={!canProceed()}>
-              Publish Listing
+              {submitError ? 'Retry' : 'Publish Listing'}
             </Button>
           ) : (
             <Button onClick={goToNextStep} disabled={!canProceed()}>
               Continue
               <ChevronRight size={18} />
             </Button>
+          )}
+          {submitError && (
+            <div className={styles.error}>
+              Error: {submitError}
+            </div>
           )}
         </div>
       </div>

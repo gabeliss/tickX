@@ -5,7 +5,7 @@ A ticket marketplace application that aggregates events from Ticketmaster and di
 ## Tech Stack
 
 - **Frontend**: React 19 + TypeScript + Vite
-- **Backend**: Java 21 + Spring Boot 3 + ECS Fargate
+- **Backend**: Java 17 + Spring Boot 3 + Gradle + ECS Fargate
 - **Database**: DynamoDB
 - **Infrastructure**: AWS CDK (TypeScript)
 - **Build Tool**: Make
@@ -31,12 +31,11 @@ tickX/
 │   │       ├── repository/# DynamoDB repositories
 │   │       └── model/     # Domain models
 │   ├── Dockerfile
-│   └── pom.xml
+│   └── build.gradle
 │
-├── infrastructure/        # AWS CDK infrastructure
-│   └── cdk/               # CDK application
-│       ├── lib/           # CDK stacks
-│       └── bin/           # CDK app entry
+├── cdk/                   # AWS CDK infrastructure
+│   ├── lib/               # CDK stacks
+│   └── bin/               # CDK app entry
 │
 ├── shared/                # Shared TypeScript types
 │   └── types/
@@ -47,8 +46,8 @@ tickX/
 ## Prerequisites
 
 - Node.js 20.x or later
-- Java 21
-- Maven 3.9+
+- Java 17
+- Gradle 8.5+
 - Docker
 - AWS CLI configured with credentials
 - Make (usually pre-installed on macOS/Linux)
@@ -106,14 +105,14 @@ docker run -p 8080:8080 \
 
 The API will be available at `http://localhost:8080`
 
-#### Run Locally with Maven (alternative)
+#### Run Locally with Gradle (alternative)
 
-If you have Java 21 and Maven installed:
+If you have Java 17 and Gradle installed:
 
 ```bash
 cd backend
-mvn clean package -DskipTests
-java -jar target/tickx-backend-0.0.1-SNAPSHOT.jar
+./gradlew clean build -x test
+java -jar build/libs/tickx-backend-0.0.1-SNAPSHOT.jar
 ```
 
 #### Deploy to AWS
@@ -173,9 +172,9 @@ The app will be available at `http://localhost:5173`
 
 | Command | Description |
 |---------|-------------|
-| `mvn clean package` | Build the project |
-| `mvn spring-boot:run` | Run locally |
-| `mvn test` | Run tests |
+| `./gradlew clean build` | Build the project |
+| `./gradlew bootRun` | Run locally |
+| `./gradlew test` | Run tests |
 
 ### Infrastructure
 
@@ -193,6 +192,10 @@ The app will be available at `http://localhost:5173`
 |----------|------|---------|
 | DynamoDB | `TickX-Events` | Event storage with GSIs for filtering |
 | DynamoDB | `TickX-Venues` | Venue storage |
+| DynamoDB | `TickX-Users` | User accounts and profiles |
+| DynamoDB | `TickX-Listings` | Ticket listings with seller workflow |
+| DynamoDB | `TickX-Bids` | Bidding system for listings |
+| DynamoDB | `TickX-Transactions` | Purchase and payment records |
 | ECS Fargate | `TickX-Backend` | Java Spring Boot API |
 | ALB | `TickX-ALB` | Load balancer for the API |
 | VPC | `TickXVpc` | Network infrastructure |
@@ -206,6 +209,11 @@ The app will be available at `http://localhost:5173`
 | GET | `/events/{eventId}` | Get single event |
 | GET | `/venues` | List venues by city |
 | GET | `/venues/{venueId}` | Get single venue |
+| GET | `/listings` | List ticket listings |
+| POST | `/listings` | Create new listing |
+| GET | `/listings/{listingId}` | Get single listing |
+| PUT | `/listings/{listingId}` | Update listing |
+| DELETE | `/listings/{listingId}` | Delete listing |
 | POST | `/sync` | Manually trigger Ticketmaster sync |
 | GET | `/health` | Health check endpoint |
 
@@ -270,6 +278,7 @@ curl -X POST "http://<api-url>/sync"
 1. Ensure Docker is running (needed to build the image)
 2. Ensure AWS credentials are configured
 3. Run `npm install` in the cdk directory
+4. Ensure Java 17 is installed (not Java 21 or 25)
 
 ## Development Notes
 

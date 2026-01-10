@@ -1,8 +1,32 @@
 export const APP_NAME = 'TickX';
 
-// DynamoDB
+// DynamoDB Tables
 export const DYNAMODB_EVENTS_TABLE = `${APP_NAME}-Events`;
 export const DYNAMODB_VENUES_TABLE = `${APP_NAME}-Venues`;
+export const DYNAMODB_USERS_TABLE = `${APP_NAME}-Users`;
+export const DYNAMODB_LISTINGS_TABLE = `${APP_NAME}-Listings`;
+export const DYNAMODB_BIDS_TABLE = `${APP_NAME}-Bids`;
+export const DYNAMODB_TRANSACTIONS_TABLE = `${APP_NAME}-Transactions`;
+
+// DynamoDB Keys
+export const USER_ID_KEY = 'userId';
+export const LISTING_ID_KEY = 'listingId';
+export const BID_ID_KEY = 'bidId';
+export const TRANSACTION_ID_KEY = 'transactionId';
+export const SELLER_ID_KEY = 'sellerId';
+export const EVENT_ID_KEY = 'eventId';
+export const STATUS_KEY = 'status';
+export const BIDDER_ID_KEY = 'bidderId';
+export const BUYER_ID_KEY = 'buyerId';
+export const CREATED_AT_KEY = 'createdAt';
+
+// GSI Names
+export const SELLER_CREATED_AT_INDEX = 'sellerId-createdAt-index';
+export const EVENT_CREATED_AT_INDEX = 'eventId-createdAt-index';
+export const STATUS_CREATED_AT_INDEX = 'status-createdAt-index';
+export const LISTING_CREATED_AT_INDEX = 'listingId-createdAt-index';
+export const BIDDER_CREATED_AT_INDEX = 'bidderId-createdAt-index';
+export const BUYER_CREATED_AT_INDEX = 'buyerId-createdAt-index';
 
 // ECS Configuration
 export const ECS_TASK_MEMORY = 1024;

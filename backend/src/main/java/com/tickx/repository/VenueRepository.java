@@ -2,7 +2,6 @@ package com.tickx.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tickx.dto.PaginatedResponse;
 import com.tickx.model.Venue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ public class VenueRepository {
     private final DynamoDbClient dynamoDbClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${aws.dynamodb.venues-table}")
+    @Value("${VENUES_TABLE}")
     private String venuesTable;
 
     public Optional<Venue> findById(String venueId) {
@@ -46,7 +45,7 @@ public class VenueRepository {
         }
     }
 
-    public PaginatedResponse<Venue> findByCity(String city, int pageSize, String cursor) {
+    public List<Venue> findByCity(String city, int pageSize, String cursor) {
         String cityKey = city.toLowerCase().replace(" ", "_");
 
         try {
@@ -73,10 +72,10 @@ public class VenueRepository {
                     ? encodeCursor(response.lastEvaluatedKey())
                     : null;
 
-            return PaginatedResponse.of(venues, pageSize, nextCursor != null, nextCursor);
+            return venues;
         } catch (Exception e) {
             log.error("Error querying venues by city {}: {}", city, e.getMessage());
-            return PaginatedResponse.of(List.of(), pageSize, false, null);
+            return List.of();
         }
     }
 

@@ -7,6 +7,13 @@ dist-ssr/
 build/
 cdk.out/
 
+# Gradle
+backend/.gradle/
+backend/build/
+backend/gradle/
+backend/gradlew
+backend/gradlew.bat
+
 # Logs
 logs/
 *.log

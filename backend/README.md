@@ -4,8 +4,8 @@ Java Spring Boot API for the TickX ticket marketplace application.
 
 ## Prerequisites
 
-- Java 21
-- Maven 3.9+
+- Java 17
+- Gradle 8.5+
 - Docker (for containerized deployment)
 - AWS CLI configured with credentials
 
@@ -15,13 +15,13 @@ Java Spring Boot API for the TickX ticket marketplace application.
 
 ```bash
 # Build the application
-mvn clean package -DskipTests
+./gradlew clean build -x test
 
 # Run the application
-mvn spring-boot:run
+./gradlew bootRun
 
 # Or run the JAR directly
-java -jar target/tickx-backend-0.0.1-SNAPSHOT.jar
+java -jar build/libs/tickx-backend-0.0.1-SNAPSHOT.jar
 ```
 
 The API will be available at `http://localhost:8080`
@@ -44,10 +44,10 @@ docker run -p 8080:8080 \
 
 ```bash
 # Run all tests
-mvn test
+./gradlew test
 
 # Run tests with coverage
-mvn test jacoco:report
+./gradlew test jacocoTestReport
 ```
 
 ## Environment Variables
@@ -70,6 +70,11 @@ The backend uses these environment variables (automatically set by CDK deploymen
 | GET | `/events/{eventId}` | Get single event |
 | GET | `/venues` | List venues by city |
 | GET | `/venues/{venueId}` | Get single venue |
+| GET | `/listings` | List ticket listings |
+| POST | `/listings` | Create new listing |
+| GET | `/listings/{listingId}` | Get single listing |
+| PUT | `/listings/{listingId}` | Update listing |
+| DELETE | `/listings/{listingId}` | Delete listing |
 | POST | `/sync` | Manually trigger Ticketmaster sync |
 | GET | `/health` | Health check endpoint |
 
@@ -106,7 +111,7 @@ The application configuration is in `src/main/resources/application.yml`:
 3. Check AWS credentials are configured
 
 ### "Connection refused"
-1. Ensure Java 21 is installed
+1. Ensure Java 17 is installed (not Java 21 or 25)
 2. Check if port 8080 is available
 3. Verify AWS credentials for DynamoDB access
 

@@ -1,14 +1,9 @@
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+# Gradle
+.gradle/
+build/
+gradle/
+gradlew
+gradlew.bat
 
 # IDE
 .idea/
@@ -27,11 +22,3 @@ Thumbs.db
 # Logs
 *.log
 logs/
-
-# CDK
-cdk/node_modules/
-cdk/dist/
-cdk/cdk.out/
-*.js
-*.d.ts
-!cdk/cdk.json

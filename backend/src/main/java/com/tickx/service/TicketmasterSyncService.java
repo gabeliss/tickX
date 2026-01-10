@@ -28,10 +28,10 @@ public class TicketmasterSyncService {
     private final VenueRepository venueRepository;
     private final SsmClient ssmClient;
 
-    @Value("${aws.ssm.ticketmaster-api-key-param}")
+    @Value("${TM_API_KEY_PARAM}")
     private String apiKeyParamName;
 
-    @Value("${ticketmaster.sync.enabled}")
+    @Value("${SYNC_ENABLED:true}")
     private boolean syncEnabled;
 
     private static final List<CityConfig> CITIES_TO_SYNC = List.of(
@@ -41,7 +41,6 @@ public class TicketmasterSyncService {
 
     private record CityConfig(String city, String stateCode) {}
 
-    @Scheduled(cron = "${ticketmaster.sync.cron}")
     public void scheduledSync() {
         if (!syncEnabled) {
             log.info("Scheduled sync is disabled");

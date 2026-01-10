@@ -1,7 +1,7 @@
 import { App } from 'aws-cdk-lib';
 import { DynamoDbStack } from './stacks/dynamodb-stack';
-import { VpcStack } from './stacks/vpc-stack';
-import { EcsServiceStack } from './stacks/ecs-service-stack';
+import { ServiceStack } from './stacks/service-stack';
+import { ApiGatewayStack } from './stacks/api-stack';
 import { APP_NAME, AWS_REGION } from './constants';
 
 export class TickXApp extends App {
@@ -18,21 +18,27 @@ export class TickXApp extends App {
       env,
     });
 
-    // VPC Stack
-    const vpcStack = new VpcStack(this, `${APP_NAME}-Vpc`, {
+    // Service Stack
+    const serviceStack = new ServiceStack(this, `${APP_NAME}-Service`, {
       env,
-    });
-
-    // ECS Service Stack
-    const ecsServiceStack = new EcsServiceStack(this, `${APP_NAME}-EcsService`, {
-      env,
-      vpc: vpcStack.vpc,
       eventsTable: dynamoDbStack.eventsTable,
       venuesTable: dynamoDbStack.venuesTable,
+      usersTable: dynamoDbStack.usersTable,
+      listingsTable: dynamoDbStack.listingsTable,
+      bidsTable: dynamoDbStack.bidsTable,
+      transactionsTable: dynamoDbStack.transactionsTable,
+    });
+
+    // API Gateway Stack
+    const apiGatewayStack = new ApiGatewayStack(this, `${APP_NAME}-ApiGateway`, {
+      env,
+      eventsLambda: serviceStack.eventsLambda,
+      listingsLambda: serviceStack.listingsLambda,
+      venuesLambda: serviceStack.venuesLambda,
     });
 
     // Stack dependencies
-    ecsServiceStack.addDependency(vpcStack);
-    ecsServiceStack.addDependency(dynamoDbStack);
+    serviceStack.addDependency(dynamoDbStack);
+    apiGatewayStack.addDependency(serviceStack);
   }
 }
