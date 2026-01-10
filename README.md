@@ -5,7 +5,7 @@ A ticket marketplace application that aggregates events from Ticketmaster and di
 ## Tech Stack
 
 - **Frontend**: React 19 + TypeScript + Vite
-- **Backend**: Java 17 + Spring Boot 3 + Gradle + ECS Fargate
+- **Backend**: Java 17 + Spring Boot 3 + Gradle + Lambda
 - **Database**: DynamoDB
 - **Infrastructure**: AWS CDK (TypeScript)
 - **Build Tool**: Make
@@ -23,14 +23,13 @@ tickX/
 │   │   └── hooks/         # Custom React hooks
 │   └── package.json
 │
-├── backend/               # Java Spring Boot API
+├── backend/               # Java Spring Boot Lambda
 │   ├── src/main/java/     # Java source code
 │   │   └── com/tickx/
-│   │       ├── controller/# REST controllers
+│   │       ├── handler/   # Lambda handlers
 │   │       ├── service/   # Business logic
 │   │       ├── repository/# DynamoDB repositories
 │   │       └── model/     # Domain models
-│   ├── Dockerfile
 │   └── build.gradle
 │
 ├── cdk/                   # AWS CDK infrastructure
@@ -121,11 +120,11 @@ java -jar build/libs/tickx-backend-0.0.1-SNAPSHOT.jar
 # Deploy infrastructure
 make deploy
 
-# Or full deployment (infrastructure + Docker image)
+# Or full deployment (infrastructure + Lambda functions)
 make deploy-all
 ```
 
-After deployment, note the `ApiUrl` output - this is your backend URL.
+After deployment, note the `ApiUrl` output - this is your API Gateway URL.
 
 ### 5. Frontend Setup
 
@@ -133,10 +132,10 @@ After deployment, note the `ApiUrl` output - this is your backend URL.
 cd frontend
 npm install
 
-# Set the API URL (from the backend deployment output)
-export VITE_API_URL=http://<your-alb-dns-name>
+# Set the API URL (from the deployment output)
+export VITE_API_URL=https://<your-api-gateway-id>.execute-api.us-east-1.amazonaws.com/prod
 
-# Or for local development against local backend:
+# Or for local development:
 export VITE_API_URL=http://localhost:8080
 
 npm run dev
@@ -152,8 +151,7 @@ The app will be available at `http://localhost:5173`
 |---------|-------------|
 | `make build` | Build all components |
 | `make deploy` | Deploy infrastructure to AWS |
-| `make docker-build` | Build and push Docker image to ECR |
-| `make deploy-all` | Full deployment (infrastructure + image) |
+| `make deploy-all` | Full deployment (infrastructure + Lambda functions) |
 | `make clean` | Clean all build artifacts |
 | `make dev-frontend` | Start frontend development server |
 | `make dev-backend` | Start backend development server |
@@ -196,9 +194,12 @@ The app will be available at `http://localhost:5173`
 | DynamoDB | `TickX-Listings` | Ticket listings with seller workflow |
 | DynamoDB | `TickX-Bids` | Bidding system for listings |
 | DynamoDB | `TickX-Transactions` | Purchase and payment records |
-| ECS Fargate | `TickX-Backend` | Java Spring Boot API |
-| ALB | `TickX-ALB` | Load balancer for the API |
-| VPC | `TickXVpc` | Network infrastructure |
+| Lambda | `TickX-EventsLambda` | Events API handler |
+| Lambda | `TickX-ListingsLambda` | Listings API handler |
+| Lambda | `TickX-VenuesLambda` | Venues API handler |
+| Lambda | `TickX-SyncLambda` | Ticketmaster sync handler |
+| API Gateway | `TickX-API` | REST API gateway |
+| EventBridge | `TickX-SyncRule` | Daily sync schedule |
 | SSM Parameter | `/tickx/ticketmaster-api-key` | Ticketmaster API key |
 
 ## API Endpoints
@@ -263,26 +264,26 @@ curl -X POST "http://<api-url>/sync"
 
 ### "No events showing"
 
-1. Check CloudWatch logs for the ECS service
-2. Verify the sync has run: `curl -X POST http://<api-url>/sync`
+1. Check CloudWatch logs for the Lambda functions
+2. Verify the sync has run: `curl -X POST https://<api-gateway-url>/sync`
 3. Check DynamoDB tables have data
 
 ### "Backend not responding"
 
-1. Check ECS service health in AWS Console
-2. Check ALB target group health
-3. Review CloudWatch logs at `/ecs/tickx-backend`
+1. Check API Gateway logs in CloudWatch
+2. Check Lambda function logs in CloudWatch
+3. Verify API Gateway integration configuration
 
 ### "CDK deploy fails"
 
-1. Ensure Docker is running (needed to build the image)
-2. Ensure AWS credentials are configured
-3. Run `npm install` in the cdk directory
-4. Ensure Java 17 is installed (not Java 21 or 25)
+1. Ensure AWS credentials are configured
+2. Run `npm install` in the cdk directory
+3. Ensure Java 17 is installed (not Java 21 or 25)
+4. Check Lambda function size limits
 
 ## Development Notes
 
-- The backend connects to the existing DynamoDB tables
+- The backend uses Lambda functions with API Gateway
 - Event data is limited to Chicago and New York (~9k events)
 - Keyword search uses DynamoDB Scan (plan to migrate to OpenSearch for production)
-- The sync job runs daily at 4 AM UTC automatically
+- The sync job runs daily at 4 AM UTC via EventBridge
