@@ -75,17 +75,19 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
  * Create a new listing
  */
 export async function createListing(listing: CreateListingRequest): Promise<{ data: ApiListing }> {
-  return fetchApi<{ data: ApiListing }>('/listings', {
+  const result = await fetchApi<ApiListing>('/listings', {
     method: 'POST',
     body: JSON.stringify(listing),
   });
+  return { data: result };
 }
 
 /**
  * Get a single listing by ID
  */
 export async function getListing(listingId: string): Promise<{ data: ApiListing }> {
-  return fetchApi<{ data: ApiListing }>(`/listings/${listingId}`);
+  const result = await fetchApi<ApiListing>(`/listings/${listingId}`);
+  return { data: result };
 }
 
 /**
@@ -111,21 +113,24 @@ export async function deleteListing(listingId: string): Promise<void> {
  * Get listings by seller (for dashboard)
  */
 export async function getSellerListings(sellerId: string): Promise<{ data: ApiListing[] }> {
-  return fetchApi<{ data: ApiListing[] }>(`/listings?sellerId=${sellerId}`);
+  const listings = await fetchApi<ApiListing[]>(`/listings?sellerId=${sellerId}`);
+  return { data: listings };
 }
 
 /**
  * Get listings for an event
  */
 export async function getEventListings(eventId: string): Promise<{ data: ApiListing[] }> {
-  return fetchApi<{ data: ApiListing[] }>(`/listings?eventId=${eventId}`);
+  const listings = await fetchApi<ApiListing[]>(`/listings?eventId=${eventId}`);
+  return { data: listings };
 }
 
 /**
  * Get active listings
  */
 export async function getActiveListings(): Promise<{ data: ApiListing[] }> {
-  return fetchApi<{ data: ApiListing[] }>('/listings?status=active');
+  const listings = await fetchApi<ApiListing[]>('/listings?status=active');
+  return { data: listings };
 }
 
 /**
@@ -159,7 +164,7 @@ export function transformApiListing(apiListing: ApiListing): Listing {
         zip: '',
         capacity: 0,
       },
-      eventDate: '',
+      eventDate: new Date().toISOString(), // Use current date as fallback
       imageUrl: '',
       status: 'scheduled',
     },

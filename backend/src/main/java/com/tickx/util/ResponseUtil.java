@@ -45,6 +45,8 @@ public final class ResponseUtil {
         Map<String, String> headers = new HashMap<>();
         headers.put(HttpConstants.CONTENT_TYPE, HttpConstants.APPLICATION_JSON);
         headers.put(HttpConstants.ACCESS_CONTROL_ALLOW_ORIGIN, HttpConstants.CORS_ALL_ORIGINS);
+        headers.put(HttpConstants.ACCESS_CONTROL_ALLOW_METHODS, HttpConstants.CORS_ALLOWED_METHODS);
+        headers.put(HttpConstants.ACCESS_CONTROL_ALLOW_HEADERS, HttpConstants.CORS_ALLOWED_HEADERS);
         return headers;
     }
 

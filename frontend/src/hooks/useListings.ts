@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   createListing, 
   getListing, 
@@ -64,7 +64,7 @@ export function useSellerListings(sellerId: string | undefined) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
     if (!sellerId) return;
     
     setIsLoading(true);
@@ -78,11 +78,11 @@ export function useSellerListings(sellerId: string | undefined) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [sellerId]);
 
   useEffect(() => {
     fetchListings();
-  }, [sellerId]);
+  }, [fetchListings]);
 
   const deleteListing = async (listingId: string): Promise<boolean> => {
     try {

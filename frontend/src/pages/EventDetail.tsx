@@ -17,7 +17,7 @@ import { ListingCard } from '../components/listings';
 import { VenueMap } from '../components/venue';
 import { VenueMapProvider, useVenueMap } from '../context/VenueMapContext';
 import { useEvent } from '../hooks';
-import { getListingsForEvent } from '../data/mockData';
+import { useEventListings } from '../hooks/useListings';
 import { getVenueMap } from '../data/venueMaps';
 import type { ListingType, Listing } from '../types';
 import styles from './EventDetail.module.css';
@@ -287,11 +287,9 @@ export const EventDetail: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('price-asc');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch event from real API
+  // Fetch event and listings from real API
   const { event, loading, error } = useEvent(eventId);
-
-  // Listings still come from mock data (for now)
-  const allListings = eventId ? getListingsForEvent(eventId) : [];
+  const { listings: allListings, isLoading: listingsLoading } = useEventListings(eventId);
 
   // Check if venue has an interactive map
   const venueId = event?.venue.id;
@@ -307,7 +305,7 @@ export const EventDetail: React.FC = () => {
   };
 
   // Loading state
-  if (loading) {
+  if (loading || listingsLoading) {
     return (
       <div className={styles.loadingState}>
         <div className={styles.spinner} />

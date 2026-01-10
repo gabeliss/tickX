@@ -24,7 +24,8 @@ import { clsx } from 'clsx';
 import { Button, Badge, Input, Card, Modal, ModalFooter } from '../components/common';
 import { MiniVenueMap } from '../components/venue';
 import { useCountdown } from '../hooks/useCountdown';
-import { mockListings, getBidsForListing, currentUser } from '../data/mockData';
+import { useListing } from '../hooks/useListings';
+import { getBidsForListing, currentUser } from '../data/mockData';
 import { getVenueMap } from '../data/venueMaps';
 import type { ListingType } from '../types';
 import styles from './ListingDetail.module.css';
@@ -42,7 +43,7 @@ export const ListingDetail: React.FC = () => {
   const [showBuyConfirmModal, setShowBuyConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const listing = mockListings.find((l) => l.id === listingId);
+  const { listing, isLoading, error } = useListing(listingId);
   const bids = listingId ? getBidsForListing(listingId) : [];
   const countdown = useCountdown(listing?.auctionEndTime);
 
@@ -69,11 +70,20 @@ export const ListingDetail: React.FC = () => {
     }
   };
 
-  if (!listing) {
+  if (isLoading) {
+    return (
+      <div className={styles.notFound}>
+        <h1>Loading...</h1>
+        <p>Loading listing details...</p>
+      </div>
+    );
+  }
+
+  if (error || !listing) {
     return (
       <div className={styles.notFound}>
         <h1>Listing Not Found</h1>
-        <p>This listing doesn't exist or has been removed.</p>
+        <p>{error || "This listing doesn't exist or has been removed."}</p>
         <Link to="/">
           <Button>Back to Home</Button>
         </Link>
