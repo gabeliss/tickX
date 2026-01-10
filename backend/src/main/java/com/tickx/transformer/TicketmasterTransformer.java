@@ -1,4 +1,4 @@
-package com.tickx.service.ticketmaster;
+package com.tickx.transformer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.tickx.model.*;
@@ -7,9 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Component

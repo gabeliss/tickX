@@ -1,7 +1,5 @@
 import { App } from 'aws-cdk-lib';
-import { DynamoDbStack } from './stacks/dynamodb-stack';
-import { ServiceStack } from './stacks/service-stack';
-import { ApiGatewayStack } from './stacks/api-stack';
+import { DynamoDbStack, ServiceStack, ApiGatewayStack } from './stacks';
 import { APP_NAME, AWS_REGION } from './constants';
 
 export class TickXApp extends App {

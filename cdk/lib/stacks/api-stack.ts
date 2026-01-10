@@ -19,7 +19,7 @@ export class ApiGatewayStack extends Stack {
     // Create API Gateway
     this.api = new RestApi(this, 'TickXApi', {
       restApiName: `${APP_NAME}-API`,
-      description: 'TickX Marketplace API',
+      description: 'TickX API',
     });
 
     // API Gateway routes

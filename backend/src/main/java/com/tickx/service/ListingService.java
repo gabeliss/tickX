@@ -43,7 +43,7 @@ public class ListingService {
         
         updatedListing.setListingId(listingId);
         updatedListing.setUpdatedAt(Instant.now().toString());
-        updatedListing.setCreatedAt(existing.get().getCreatedAt()); // Preserve original creation time
+        updatedListing.setCreatedAt(existing.get().getCreatedAt());
         
         return listingRepository.save(updatedListing);
     }
